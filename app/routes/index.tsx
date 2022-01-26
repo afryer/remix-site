@@ -1,35 +1,31 @@
-import type { MetaFunction } from "remix";
+import { Link, useLoaderData, MetaFunction } from "remix";
+import { getPosts } from "~/post";
+import type { Post } from "~/post";
 
-
-// https://remix.run/api/conventions#meta
-export let meta: MetaFunction = () => {
+export const loader = () => {
+  return getPosts();
+};
+export const meta: MetaFunction = () => {
   return {
-    title: "Remix Starter",
-    description: "Welcome to remix!"
+    title: "Anthony Fryer - blog posts",
+    description:
+      "Anthony Fryer all the posts"
   };
 };
-
-// https://remix.run/guides/routing#index-routes
-export default function Index() {
-
+export default function Posts() {
+  // and this is the call for the data. 
+  const posts = useLoaderData<Post[]>();
   return (
-    <div className="remix__page">
-      <main>
-        <h2>Welcome to Remix!</h2>
-        <p>We're stoked that you're here. 🥳</p>
-        <p>
-          Feel free to take a look around the code to see how Remix does things,
-          it might be a bit different than what you’re used to. When you're
-          ready to dive deeper, we've got plenty of resources to get you
-          up-and-running quickly.
-        </p>
-        <p>
-          Check out all the demos in this starter, and then just delete the{" "}
-          <code>app/routes/demos</code> and <code>app/styles/demos</code>{" "}
-          folders when you're ready to turn this into your next project.
-        </p>
-      </main>
-
+    <div>
+      {posts.map(post => (
+        <div className="post-intro" key={post.slug}>
+          <h2>
+            <Link to={post.slug}>{post.title}</Link>
+          </h2>
+          <div dangerouslySetInnerHTML={{ __html: post.teaser }} />
+        </ div>
+      ))}
     </div>
   );
 }
+
